@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - my_network
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - '8080:80'
+    networks:
+      - my_network
+
+  python:
+    build: ./python_app
+    container_name: python_app
+    volumes:
+      - ./python_app:/usr/src/app
+    ports:
+      - '4000:4000'
+    networks:
+      - my_network
+
+volumes:
+  db_data:
+
+networks:
+  my_network:
